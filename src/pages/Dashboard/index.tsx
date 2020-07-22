@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 import Header from '../../components/Header';
 import api from '../../services/api';
@@ -42,7 +43,9 @@ const Dashboard: React.FC = () => {
 
       setFoods([...foods, data]);
     } catch (err) {
-      console.log(err);
+      toast.error(
+        'An error occured while creating the new plate, try again later!',
+      );
     }
   }
 
