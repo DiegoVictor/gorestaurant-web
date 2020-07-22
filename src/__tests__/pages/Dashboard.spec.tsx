@@ -1,9 +1,8 @@
 import React from 'react';
-
 import { render, fireEvent, act, wait } from '@testing-library/react';
 import AxiosMock from 'axios-mock-adapter';
-import api from '../../services/api';
 
+import api from '../../services/api';
 import Dashboard from '../../pages/Dashboard';
 
 const apiMock = new AxiosMock(api);
@@ -78,7 +77,15 @@ describe('Dashboard', () => {
   });
 
   it('should be able to add a new food plate', async () => {
-    apiMock.onGet('foods').reply(200, []);
+    apiMock.onGet('foods').reply(200, []).onPost('foods').reply(200, {
+      id: 1,
+      name: 'Ao molho',
+      description:
+        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
+      price: '19.90',
+      available: true,
+      image: 'http://rocketseat.com.br',
+    });
 
     const { getByText, getByTestId, getByPlaceholderText, debug } = render(
       <Dashboard />,
@@ -114,16 +121,6 @@ describe('Dashboard', () => {
       'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
     );
 
-    apiMock.onPost('foods').reply(200, {
-      id: 1,
-      name: 'Ao molho',
-      description:
-        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-      price: '19.90',
-      available: true,
-      image: 'http://rocketseat.com.br',
-    });
-
     await act(async () => {
       fireEvent.click(getByTestId('add-food-button'));
     });
@@ -143,17 +140,29 @@ describe('Dashboard', () => {
   });
 
   it('should be able to edit a food plate', async () => {
-    apiMock.onGet('foods').reply(200, [
-      {
+    apiMock
+      .onGet('foods')
+      .reply(200, [
+        {
+          id: 1,
+          name: 'Ao molho',
+          description:
+            'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
+          price: '19.90',
+          available: true,
+          image: 'http://rocketseat.com.br',
+        },
+      ])
+      .onPut('foods/1')
+      .reply(200, {
         id: 1,
-        name: 'Ao molho',
+        name: 'Veggie',
         description:
-          'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-        price: '19.90',
+          'Macarrão com pimentão, ervilha e ervas finas colhidas no himalaia.',
+        price: '21.90',
         available: true,
         image: 'http://rocketseat.com.br',
-      },
-    ]);
+      });
 
     const { getByText, getByTestId, getByPlaceholderText } = render(
       <Dashboard />,
@@ -202,16 +211,6 @@ describe('Dashboard', () => {
       'Macarrão com pimentão, ervilha e ervas finas colhidas no himalaia.',
     );
 
-    apiMock.onPut('foods/1').reply(200, {
-      id: 1,
-      name: 'Veggie',
-      description:
-        'Macarrão com pimentão, ervilha e ervas finas colhidas no himalaia.',
-      price: '21.90',
-      available: true,
-      image: 'http://rocketseat.com.br',
-    });
-
     await act(async () => {
       fireEvent.click(getByTestId('edit-food-button'));
     });
@@ -231,19 +230,22 @@ describe('Dashboard', () => {
   });
 
   it('should be able to remove a food plate', async () => {
-    apiMock.onGet('foods').reply(200, [
-      {
-        id: 1,
-        name: 'Ao molho',
-        description:
-          'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-        price: '19.90',
-        available: true,
-        image: 'http://rocketseat.com.br',
-      },
-    ]);
+    apiMock
+      .onGet('foods')
+      .reply(200, [
+        {
+          id: 1,
+          name: 'Ao molho',
+          description:
+            'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
+          price: '19.90',
+          available: true,
+          image: 'http://rocketseat.com.br',
+        },
+      ])
 
-    apiMock.onDelete('foods/1').reply(204);
+      .onDelete('foods/1')
+      .reply(204);
 
     const { getByText, getByTestId } = render(<Dashboard />);
 
@@ -268,17 +270,29 @@ describe('Dashboard', () => {
   });
 
   it('should be able to update the availibility of a food plate', async () => {
-    apiMock.onGet('foods').reply(200, [
-      {
+    apiMock
+      .onGet('foods')
+      .reply(200, [
+        {
+          id: 1,
+          name: 'Ao molho',
+          description:
+            'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
+          price: '19.90',
+          available: true,
+          image: 'http://rocketseat.com.br',
+        },
+      ])
+      .onPut('foods/1')
+      .reply(200, {
         id: 1,
         name: 'Ao molho',
         description:
           'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
         price: '19.90',
-        available: true,
+        available: false,
         image: 'http://rocketseat.com.br',
-      },
-    ]);
+      });
 
     const { getByText, getByTestId } = render(<Dashboard />);
 
@@ -295,16 +309,6 @@ describe('Dashboard', () => {
     expect(getByText('Disponível')).toBeTruthy();
     expect(getByTestId('remove-food-1')).toBeTruthy();
     expect(getByTestId('edit-food-1')).toBeTruthy();
-
-    apiMock.onPut('foods/1').reply(200, {
-      id: 1,
-      name: 'Ao molho',
-      description:
-        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-      price: '19.90',
-      available: false,
-      image: 'http://rocketseat.com.br',
-    });
 
     await act(async () => {
       fireEvent.click(getByTestId('change-status-food-1'));
