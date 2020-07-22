@@ -1,7 +1,5 @@
 import React from 'react';
-
 import { FiPlusSquare } from 'react-icons/fi';
-import { Container } from './styles';
 
 import Logo from '../../assets/logo.svg';
 
