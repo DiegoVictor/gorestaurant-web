@@ -4,6 +4,7 @@ import { FormHandles } from '@unform/core';
 
 import Modal from '../Modal';
 import Input from '../Input';
+import { Form } from './styles';
 
 interface IFoodPlate {
   id: number;

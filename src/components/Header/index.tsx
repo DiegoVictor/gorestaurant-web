@@ -2,6 +2,7 @@ import React from 'react';
 import { FiPlusSquare } from 'react-icons/fi';
 
 import Logo from '../../assets/logo.svg';
+import { Container } from './styles';
 
 interface IHeaderProps {
   openModal: () => void;
