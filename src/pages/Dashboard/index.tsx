@@ -54,14 +54,15 @@ const Dashboard: React.FC = () => {
   ): Promise<void> {
     const { id, available } = editingFood;
     const { data } = await api.put(`foods/${id}`, { id, available, ...food });
-    setFoods(
-      foods.map(plate => {
-        if (plate.id === data.id) {
-          return data;
-        }
-        return plate;
-      }),
+
+    const newFoodsList = [...foods];
+
+    newFoodsList.splice(
+      foods.findIndex(plate => plate.id === data.id),
+      1,
+      data,
     );
+    setFoods(newFoodsList);
   }
 
   async function handleDeleteFood(id: number): Promise<void> {
