@@ -52,17 +52,23 @@ const Dashboard: React.FC = () => {
   async function handleUpdateFood(
     food: Omit<IFoodPlate, 'id' | 'available'>,
   ): Promise<void> {
-    const { id, available } = editingFood;
-    const { data } = await api.put(`foods/${id}`, { id, available, ...food });
+    try {
+      const { id, available } = editingFood;
+      const { data } = await api.put(`foods/${id}`, { id, available, ...food });
 
-    const newFoodsList = [...foods];
+      const newFoodsList = [...foods];
 
-    newFoodsList.splice(
-      foods.findIndex(plate => plate.id === data.id),
-      1,
-      data,
-    );
-    setFoods(newFoodsList);
+      newFoodsList.splice(
+        foods.findIndex(plate => plate.id === data.id),
+        1,
+        data,
+      );
+      setFoods(newFoodsList);
+    } catch (err) {
+      toast.error(
+        'An error occured while creating the new plate, try again later!',
+      );
+    }
   }
 
   async function handleDeleteFood(id: number): Promise<void> {

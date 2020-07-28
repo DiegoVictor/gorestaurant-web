@@ -2,8 +2,11 @@ import React from 'react';
 import { render, fireEvent, act, wait } from '@testing-library/react';
 import AxiosMock from 'axios-mock-adapter';
 
+import { toast } from 'react-toastify';
 import api from '../../src/services/api';
 import Dashboard from '../../src/pages/Dashboard';
+
+jest.mock('react-toastify');
 
 describe('Dashboard', () => {
   const apiMock = new AxiosMock(api);
@@ -139,6 +142,61 @@ describe('Dashboard', () => {
     expect(getByTestId('edit-food-1')).toBeTruthy();
   });
 
+  it('should not be able to add a new food plate with network error', async () => {
+    const error = jest.fn();
+
+    apiMock.onGet('foods').reply(200, []).onPost('foods').reply(400);
+    toast.error = error;
+
+    const { getByText, getByTestId, getByPlaceholderText } = render(
+      <Dashboard />,
+    );
+
+    act(() => {
+      fireEvent.click(getByText('Novo Prato'));
+    });
+
+    const inputImage = getByPlaceholderText('Cole o link aqui');
+    const inputName = getByPlaceholderText('Ex: Moda Italiana');
+    const inputValue = getByPlaceholderText('Ex: 19.90');
+    const inputDescription = getByPlaceholderText('Descrição');
+
+    await act(async () => {
+      fireEvent.change(inputImage, {
+        target: { value: 'http://rocketseat.com.br' },
+      });
+      fireEvent.change(inputName, { target: { value: 'Ao molho' } });
+      fireEvent.change(inputValue, { target: { value: '19.90' } });
+      fireEvent.change(inputDescription, {
+        target: {
+          value:
+            'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
+        },
+      });
+    });
+
+    expect(inputImage.value).toBe('http://rocketseat.com.br');
+    expect(inputName.value).toBe('Ao molho');
+    expect(inputValue.value).toBe('19.90');
+    expect(inputDescription.value).toBe(
+      'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
+    );
+
+    await act(async () => {
+      fireEvent.click(getByTestId('add-food-button'));
+    });
+
+    await wait(
+      () =>
+        expect(toast.error).toHaveBeenCalledWith(
+          'An error occured while creating the new plate, try again later!',
+        ),
+      {
+        timeout: 200,
+      },
+    );
+  });
+
   it('should not be able to add a new food plate with invalid data', async () => {
     apiMock.onGet('foods').reply(200, []);
 
@@ -266,6 +324,87 @@ describe('Dashboard', () => {
     ).toBeTruthy();
     expect(getByTestId('remove-food-1')).toBeTruthy();
     expect(getByTestId('edit-food-1')).toBeTruthy();
+  });
+
+  it('should be able to edit a food plate', async () => {
+    const error = jest.fn();
+
+    apiMock
+      .onGet('foods')
+      .reply(200, [
+        {
+          id: 1,
+          name: 'Ao molho',
+          description:
+            'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
+          price: '19.90',
+          available: true,
+          image: 'http://rocketseat.com.br',
+        },
+      ])
+      .onPut('foods/1')
+      .reply(400);
+
+    const { getByText, getByTestId, getByPlaceholderText } = render(
+      <Dashboard />,
+    );
+
+    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+      timeout: 200,
+    });
+
+    expect(getByText('Ao molho')).toBeTruthy();
+    expect(
+      getByText(
+        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
+      ),
+    ).toBeTruthy();
+    expect(getByTestId('remove-food-1')).toBeTruthy();
+    expect(getByTestId('edit-food-1')).toBeTruthy();
+
+    act(() => {
+      fireEvent.click(getByTestId('edit-food-1'));
+    });
+
+    const inputImage = getByPlaceholderText('Cole o link aqui');
+    const inputName = getByPlaceholderText('Ex: Moda Italiana');
+    const inputValue = getByPlaceholderText('Ex: 19.90');
+    const inputDescription = getByPlaceholderText('Descrição');
+
+    await act(async () => {
+      fireEvent.change(inputImage, {
+        target: { value: 'http://rocketseat.com.br' },
+      });
+      fireEvent.change(inputName, { target: { value: 'Veggie' } });
+      fireEvent.change(inputValue, { target: { value: '21.90' } });
+      fireEvent.change(inputDescription, {
+        target: {
+          value:
+            'Macarrão com pimentão, ervilha e ervas finas colhidas no himalaia.',
+        },
+      });
+    });
+
+    expect(inputImage.value).toBe('http://rocketseat.com.br');
+    expect(inputName.value).toBe('Veggie');
+    expect(inputValue.value).toBe('21.90');
+    expect(inputDescription.value).toBe(
+      'Macarrão com pimentão, ervilha e ervas finas colhidas no himalaia.',
+    );
+
+    await act(async () => {
+      fireEvent.click(getByTestId('edit-food-button'));
+    });
+
+    await wait(
+      () =>
+        expect(toast.error).toHaveBeenCalledWith(
+          'An error occured while creating the new plate, try again later!',
+        ),
+      {
+        timeout: 200,
+      },
+    );
   });
 
   it('should not be able to edit a food plate with invalid data', async () => {
