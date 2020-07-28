@@ -55,6 +55,10 @@
     "eject": "react-scripts eject"
   },
   "jest": {
+    "roots": [
+      "<rootDir>/src/",
+      "<rootDir>/tests/"
+    ],
     "collectCoverage": true,
     "collectCoverageFrom": [
       "!src/*",
@@ -63,13 +67,9 @@
       "src/pages/**/*",
       "src/components/**/*"
     ],
-    "coverageDirectory": "src/__tests__/coverage",
-    "coverageReporters": [
-      "text",
-      "lcov"
-    ],
+    "coverageDirectory": "tests/coverage",
     "testMatch": [
-      "src/__tests__/**/*.spec.tsx"
+      "**/tests/**/*.spec.tsx"
     ]
   },
   "eslintConfig": {
