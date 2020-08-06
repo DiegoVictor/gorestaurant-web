@@ -232,7 +232,7 @@ describe('Dashboard', () => {
       timeout: 200,
     });
 
-    expect(getByText('Must have more than 3 characters')).toBeTruthy();
+    expect(getByText('Must have more than 4 characters')).toBeTruthy();
     expect(getByText('Must be a valid URL')).toBeTruthy();
   });
 
@@ -465,7 +465,7 @@ describe('Dashboard', () => {
       timeout: 200,
     });
 
-    expect(getByText('Must have more than 3 characters')).toBeTruthy();
+    expect(getByText('Must have more than 4 characters')).toBeTruthy();
     expect(getByText('Must be a valid URL')).toBeTruthy();
   });
 

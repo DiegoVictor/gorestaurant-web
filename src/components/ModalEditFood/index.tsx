@@ -47,7 +47,7 @@ const ModalEditFood: React.FC<IModalProps> = ({
             .url('Must be a valid URL')
             .required('This field is required'),
           name: Yup.string()
-            .min(4, 'Must have more than 3 characters')
+            .min(4, 'Must have more than 4 characters')
             .required('This field is required'),
           price: Yup.string()
             .matches(/\d+\.\d+/i, 'Invalid price')
