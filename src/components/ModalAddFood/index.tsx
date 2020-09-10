@@ -5,8 +5,8 @@ import * as Yup from 'yup';
 
 import Modal from '../Modal';
 import Input from '../Input';
-import { Form } from './styles';
 import getValidationErrors from '../../utils/getValidationErrors';
+import { Form } from './styles';
 
 interface IFoodPlate {
   id: number;
