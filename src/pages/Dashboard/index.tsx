@@ -66,7 +66,7 @@ const Dashboard: React.FC = () => {
       setFoods(newFoodsList);
     } catch (err) {
       toast.error(
-        'An error occured while creating the new plate, try again later!',
+        'An error occured while updateing the existing plate, try again later!',
       );
     }
   }
