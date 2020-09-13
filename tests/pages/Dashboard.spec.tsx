@@ -152,6 +152,10 @@ describe('Dashboard', () => {
         timeout: 200,
       },
     );
+
+    expect(toast.error).toHaveBeenCalledWith(
+      'An error occured while creating the new plate, try again later!',
+    );
   });
 
   it('should not be able to add a new food plate with invalid data', async () => {
@@ -269,6 +273,69 @@ describe('Dashboard', () => {
     expect(getByText(editFood.description)).toBeTruthy();
     expect(getByTestId(`remove-food-${editFood.id}`)).toBeTruthy();
     expect(getByTestId(`edit-food-${editFood.id}`)).toBeTruthy();
+  });
+
+  it('should not be able to edit a food plate with network error', async () => {
+    const error = jest.fn();
+    const food = await factory.attrs<IFood>('Food');
+
+    apiMock.onGet('foods').reply(200, [food]).onPost('foods').reply(400);
+    toast.error = error;
+
+    const { getByText, getByTestId, getByPlaceholderText } = render(
+      <Dashboard />,
+    );
+
+    await waitFor(() => expect(getByText(food.name)).toBeTruthy(), {
+      timeout: 200,
+    });
+
+    expect(getByText(food.name)).toBeTruthy();
+    expect(getByText(food.description)).toBeTruthy();
+    expect(getByTestId(`remove-food-${food.id}`)).toBeTruthy();
+    expect(getByTestId(`edit-food-${food.id}`)).toBeTruthy();
+
+    act(() => {
+      fireEvent.click(getByTestId(`edit-food-${food.id}`));
+    });
+
+    const inputImage = getByPlaceholderText(
+      'Cole o link aqui',
+    ) as HTMLInputElement;
+    const inputName = getByPlaceholderText(
+      'Ex: Moda Italiana',
+    ) as HTMLInputElement;
+    const inputValue = getByPlaceholderText('Ex: 19.90') as HTMLInputElement;
+
+    await act(async () => {
+      fireEvent.change(inputImage, {
+        target: { value: food.image },
+      });
+      fireEvent.change(inputName, { target: { value: food.name } });
+      fireEvent.change(inputValue, { target: { value: food.price } });
+    });
+
+    expect(inputImage.value).toBe(food.image);
+    expect(inputName.value).toBe(food.name);
+    expect(inputValue.value).toBe(food.price);
+
+    await act(async () => {
+      fireEvent.click(getByTestId('edit-food-button'));
+    });
+
+    await waitFor(
+      () =>
+        expect(toast.error).toHaveBeenCalledWith(
+          'An error occured while updateing the existing plate, try again later!',
+        ),
+      {
+        timeout: 200,
+      },
+    );
+
+    expect(toast.error).toHaveBeenCalledWith(
+      'An error occured while updateing the existing plate, try again later!',
+    );
   });
 
   it('should not be able to edit a food plate with invalid data', async () => {
