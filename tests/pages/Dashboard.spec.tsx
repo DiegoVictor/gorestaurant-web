@@ -6,6 +6,15 @@ import { toast } from 'react-toastify';
 import api from '../../src/services/api';
 import Dashboard from '../../src/pages/Dashboard';
 
+interface IFood {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  available: boolean;
+  image: string;
+}
+
 jest.mock('react-toastify');
 
 describe('Dashboard', () => {
