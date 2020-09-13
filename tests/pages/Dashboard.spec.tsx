@@ -1,10 +1,12 @@
 import React from 'react';
-import { render, fireEvent, act, wait } from '@testing-library/react';
+import { render, fireEvent, act, waitFor } from '@testing-library/react';
 import AxiosMock from 'axios-mock-adapter';
+import faker from 'faker';
 
 import { toast } from 'react-toastify';
 import api from '../../src/services/api';
 import Dashboard from '../../src/pages/Dashboard';
+import factory from '../utils/factory';
 
 interface IFood {
   id: number;
@@ -21,83 +23,26 @@ describe('Dashboard', () => {
   const apiMock = new AxiosMock(api);
 
   it('should be able to list all the food plates from your api', async () => {
-    apiMock.onGet('foods').reply(200, [
-      {
-        id: 1,
-        name: 'Ao molho',
-        description:
-          'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-        price: '19.90',
-        available: true,
-        image:
-          'https://storage.googleapis.com/golden-wind/bootcamp-gostack/desafio-food/food1.png',
-      },
-      {
-        id: 2,
-        name: 'Veggie',
-        description:
-          'Macarrão com pimentão, ervilha e ervas finas colhidas no himalaia.',
-        price: '19.90',
-        available: true,
-        image:
-          'https://storage.googleapis.com/golden-wind/bootcamp-gostack/desafio-food/food2.png',
-      },
-      {
-        id: 3,
-        name: 'A la Camarón',
-        description:
-          'Macarrão com vegetais de primeira linha e camarão dos 7 mares.',
-        price: '19.90',
-        available: true,
-        image:
-          'https://storage.googleapis.com/golden-wind/bootcamp-gostack/desafio-food/food3.png',
-      },
-    ]);
+    const foods = await factory.attrsMany<IFood>('Food', 3);
+    apiMock.onGet('foods').reply(200, foods);
 
     const { getByText, getByTestId } = render(<Dashboard />);
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText(foods[0].name)).toBeTruthy(), {
       timeout: 200,
     });
 
-    expect(getByText('Ao molho')).toBeTruthy();
-    expect(
-      getByText(
-        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-      ),
-    ).toBeTruthy();
-    expect(getByTestId('remove-food-1')).toBeTruthy();
-    expect(getByTestId('edit-food-1')).toBeTruthy();
-
-    expect(getByText('Veggie')).toBeTruthy();
-    expect(
-      getByText(
-        'Macarrão com pimentão, ervilha e ervas finas colhidas no himalaia.',
-      ),
-    ).toBeTruthy();
-    expect(getByTestId('remove-food-2')).toBeTruthy();
-    expect(getByTestId('edit-food-3')).toBeTruthy();
-
-    expect(getByText('A la Camarón')).toBeTruthy();
-    expect(
-      getByText(
-        'Macarrão com vegetais de primeira linha e camarão dos 7 mares.',
-      ),
-    ).toBeTruthy();
-    expect(getByTestId('remove-food-3')).toBeTruthy();
-    expect(getByTestId('edit-food-3')).toBeTruthy();
+    foods.forEach(food => {
+      expect(getByText(food.name)).toBeTruthy();
+      expect(getByText(food.description)).toBeTruthy();
+      expect(getByTestId(`remove-food-${food.id}`)).toBeTruthy();
+      expect(getByTestId(`edit-food-${food.id}`)).toBeTruthy();
+    });
   });
 
   it('should be able to add a new food plate', async () => {
-    apiMock.onGet('foods').reply(200, []).onPost('foods').reply(200, {
-      id: 1,
-      name: 'Ao molho',
-      description:
-        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-      price: '19.90',
-      available: true,
-      image: 'http://rocketseat.com.br',
-    });
+    const food = await factory.attrs<IFood>('Food');
+    apiMock.onGet('foods').reply(200, []).onPost('foods').reply(200, food);
 
     const { getByText, getByTestId, getByPlaceholderText } = render(
       <Dashboard />,
@@ -107,52 +52,52 @@ describe('Dashboard', () => {
       fireEvent.click(getByText('Novo Prato'));
     });
 
-    const inputImage = getByPlaceholderText('Cole o link aqui');
-    const inputName = getByPlaceholderText('Ex: Moda Italiana');
-    const inputValue = getByPlaceholderText('Ex: 19.90');
-    const inputDescription = getByPlaceholderText('Descrição');
+    const inputImage = getByPlaceholderText(
+      'Cole o link aqui',
+    ) as HTMLInputElement;
+    const inputName = getByPlaceholderText(
+      'Ex: Moda Italiana',
+    ) as HTMLInputElement;
+    const inputValue = getByPlaceholderText('Ex: 19.90') as HTMLInputElement;
+    const inputDescription = getByPlaceholderText(
+      'Descrição',
+    ) as HTMLInputElement;
 
     await act(async () => {
       fireEvent.change(inputImage, {
-        target: { value: 'http://rocketseat.com.br' },
+        target: { value: food.image },
       });
-      fireEvent.change(inputName, { target: { value: 'Ao molho' } });
-      fireEvent.change(inputValue, { target: { value: '19.90' } });
+      fireEvent.change(inputName, { target: { value: food.name } });
+      fireEvent.change(inputValue, { target: { value: food.price } });
       fireEvent.change(inputDescription, {
         target: {
-          value:
-            'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
+          value: food.description,
         },
       });
     });
 
-    expect(inputImage.value).toBe('http://rocketseat.com.br');
-    expect(inputName.value).toBe('Ao molho');
-    expect(inputValue.value).toBe('19.90');
-    expect(inputDescription.value).toBe(
-      'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-    );
+    expect(inputImage.value).toBe(food.image);
+    expect(inputName.value).toBe(food.name);
+    expect(inputValue.value).toBe(food.price);
+    expect(inputDescription.value).toBe(food.description);
 
     await act(async () => {
       fireEvent.click(getByTestId('add-food-button'));
     });
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText(food.name)).toBeTruthy(), {
       timeout: 200,
     });
 
-    expect(getByText('Ao molho')).toBeTruthy();
-    expect(
-      getByText(
-        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-      ),
-    ).toBeTruthy();
-    expect(getByTestId('remove-food-1')).toBeTruthy();
-    expect(getByTestId('edit-food-1')).toBeTruthy();
+    expect(getByText(food.name)).toBeTruthy();
+    expect(getByText(food.description)).toBeTruthy();
+    expect(getByTestId(`remove-food-${food.id}`)).toBeTruthy();
+    expect(getByTestId(`edit-food-${food.id}`)).toBeTruthy();
   });
 
   it('should not be able to add a new food plate with network error', async () => {
     const error = jest.fn();
+    const food = await factory.attrs<IFood>('Food');
 
     apiMock.onGet('foods').reply(200, []).onPost('foods').reply(400);
     toast.error = error;
@@ -165,37 +110,40 @@ describe('Dashboard', () => {
       fireEvent.click(getByText('Novo Prato'));
     });
 
-    const inputImage = getByPlaceholderText('Cole o link aqui');
-    const inputName = getByPlaceholderText('Ex: Moda Italiana');
-    const inputValue = getByPlaceholderText('Ex: 19.90');
-    const inputDescription = getByPlaceholderText('Descrição');
+    const inputImage = getByPlaceholderText(
+      'Cole o link aqui',
+    ) as HTMLInputElement;
+    const inputName = getByPlaceholderText(
+      'Ex: Moda Italiana',
+    ) as HTMLInputElement;
+    const inputValue = getByPlaceholderText('Ex: 19.90') as HTMLInputElement;
+    const inputDescription = getByPlaceholderText(
+      'Descrição',
+    ) as HTMLInputElement;
 
     await act(async () => {
       fireEvent.change(inputImage, {
-        target: { value: 'http://rocketseat.com.br' },
+        target: { value: food.image },
       });
-      fireEvent.change(inputName, { target: { value: 'Ao molho' } });
-      fireEvent.change(inputValue, { target: { value: '19.90' } });
+      fireEvent.change(inputName, { target: { value: food.name } });
+      fireEvent.change(inputValue, { target: { value: food.price } });
       fireEvent.change(inputDescription, {
         target: {
-          value:
-            'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
+          value: food.description,
         },
       });
     });
 
-    expect(inputImage.value).toBe('http://rocketseat.com.br');
-    expect(inputName.value).toBe('Ao molho');
-    expect(inputValue.value).toBe('19.90');
-    expect(inputDescription.value).toBe(
-      'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-    );
+    expect(inputImage.value).toBe(food.image);
+    expect(inputName.value).toBe(food.name);
+    expect(inputValue.value).toBe(food.price);
+    expect(inputDescription.value).toBe(food.description);
 
     await act(async () => {
       fireEvent.click(getByTestId('add-food-button'));
     });
 
-    await wait(
+    await waitFor(
       () =>
         expect(toast.error).toHaveBeenCalledWith(
           'An error occured while creating the new plate, try again later!',
@@ -207,6 +155,10 @@ describe('Dashboard', () => {
   });
 
   it('should not be able to add a new food plate with invalid data', async () => {
+    const food = await factory.attrs<IFood>('Food', {
+      name: faker.lorem.word().slice(-3),
+      image: 'invalid-url',
+    });
     apiMock.onGet('foods').reply(200, []);
 
     const { getByText, getByTestId, getByPlaceholderText } = render(
@@ -217,27 +169,31 @@ describe('Dashboard', () => {
       fireEvent.click(getByText('Novo Prato'));
     });
 
-    const inputImage = getByPlaceholderText('Cole o link aqui');
-    const inputName = getByPlaceholderText('Ex: Moda Italiana');
-    const inputValue = getByPlaceholderText('Ex: 19.90');
+    const inputImage = getByPlaceholderText(
+      'Cole o link aqui',
+    ) as HTMLInputElement;
+    const inputName = getByPlaceholderText(
+      'Ex: Moda Italiana',
+    ) as HTMLInputElement;
+    const inputValue = getByPlaceholderText('Ex: 19.90') as HTMLInputElement;
 
     await act(async () => {
       fireEvent.change(inputImage, {
-        target: { value: 'rocketseat.com.br' },
+        target: { value: food.image },
       });
       fireEvent.change(inputValue, { target: { value: 'invalid price' } });
-      fireEvent.change(inputName, { target: { value: 'Veg' } });
+      fireEvent.change(inputName, { target: { value: food.name } });
     });
 
-    expect(inputImage.value).toBe('rocketseat.com.br');
-    expect(inputName.value).toBe('Veg');
+    expect(inputImage.value).toBe(food.image);
+    expect(inputName.value).toBe(food.name);
     expect(inputValue.value).toBe('invalid price');
 
     await act(async () => {
       fireEvent.click(getByTestId('add-food-button'));
     });
 
-    await wait(() => expect(getByText('Invalid price')).toBeTruthy(), {
+    await waitFor(() => expect(getByText('Invalid price')).toBeTruthy(), {
       timeout: 200,
     });
 
@@ -246,231 +202,124 @@ describe('Dashboard', () => {
   });
 
   it('should be able to edit a food plate', async () => {
+    const [food, editFood] = await factory.attrsMany<IFood>('Food', 2);
+
+    editFood.id = food.id;
     apiMock
       .onGet('foods')
-      .reply(200, [
-        {
-          id: 1,
-          name: 'Ao molho',
-          description:
-            'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-          price: '19.90',
-          available: true,
-          image: 'http://rocketseat.com.br',
-        },
-      ])
-      .onPut('foods/1')
-      .reply(200, {
-        id: 1,
-        name: 'Veggie',
-        description:
-          'Macarrão com pimentão, ervilha e ervas finas colhidas no himalaia.',
-        price: '21.90',
-        available: true,
-        image: 'http://rocketseat.com.br',
-      });
+      .reply(200, [food])
+      .onPut(`foods/${food.id}`)
+      .reply(200, editFood);
 
     const { getByText, getByTestId, getByPlaceholderText } = render(
       <Dashboard />,
     );
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText(food.name)).toBeTruthy(), {
       timeout: 200,
     });
 
-    expect(getByText('Ao molho')).toBeTruthy();
-    expect(
-      getByText(
-        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-      ),
-    ).toBeTruthy();
-    expect(getByTestId('remove-food-1')).toBeTruthy();
-    expect(getByTestId('edit-food-1')).toBeTruthy();
+    expect(getByText(food.name)).toBeTruthy();
+    expect(getByText(food.description)).toBeTruthy();
+    expect(getByTestId(`remove-food-${food.id}`)).toBeTruthy();
+    expect(getByTestId(`edit-food-${food.id}`)).toBeTruthy();
 
     act(() => {
-      fireEvent.click(getByTestId('edit-food-1'));
+      fireEvent.click(getByTestId(`edit-food-${food.id}`));
     });
 
-    const inputImage = getByPlaceholderText('Cole o link aqui');
-    const inputName = getByPlaceholderText('Ex: Moda Italiana');
-    const inputValue = getByPlaceholderText('Ex: 19.90');
-    const inputDescription = getByPlaceholderText('Descrição');
+    const inputImage = getByPlaceholderText(
+      'Cole o link aqui',
+    ) as HTMLInputElement;
+    const inputName = getByPlaceholderText(
+      'Ex: Moda Italiana',
+    ) as HTMLInputElement;
+    const inputValue = getByPlaceholderText('Ex: 19.90') as HTMLInputElement;
+    const inputDescription = getByPlaceholderText(
+      'Descrição',
+    ) as HTMLInputElement;
 
     await act(async () => {
       fireEvent.change(inputImage, {
-        target: { value: 'http://rocketseat.com.br' },
+        target: { value: editFood.image },
       });
-      fireEvent.change(inputName, { target: { value: 'Veggie' } });
-      fireEvent.change(inputValue, { target: { value: '21.90' } });
+      fireEvent.change(inputName, { target: { value: editFood.name } });
+      fireEvent.change(inputValue, { target: { value: editFood.price } });
       fireEvent.change(inputDescription, {
         target: {
-          value:
-            'Macarrão com pimentão, ervilha e ervas finas colhidas no himalaia.',
+          value: editFood.description,
         },
       });
     });
 
-    expect(inputImage.value).toBe('http://rocketseat.com.br');
-    expect(inputName.value).toBe('Veggie');
-    expect(inputValue.value).toBe('21.90');
-    expect(inputDescription.value).toBe(
-      'Macarrão com pimentão, ervilha e ervas finas colhidas no himalaia.',
-    );
+    expect(inputImage.value).toBe(editFood.image);
+    expect(inputName.value).toBe(editFood.name);
+    expect(inputValue.value).toBe(editFood.price);
+    expect(inputDescription.value).toBe(editFood.description);
 
     await act(async () => {
       fireEvent.click(getByTestId('edit-food-button'));
     });
 
-    await wait(() => expect(getByText('Veggie')).toBeTruthy(), {
+    await waitFor(() => expect(getByText(editFood.name)).toBeTruthy(), {
       timeout: 200,
     });
 
-    expect(getByText('Veggie')).toBeTruthy();
-    expect(
-      getByText(
-        'Macarrão com pimentão, ervilha e ervas finas colhidas no himalaia.',
-      ),
-    ).toBeTruthy();
-    expect(getByTestId('remove-food-1')).toBeTruthy();
-    expect(getByTestId('edit-food-1')).toBeTruthy();
-  });
-
-  it('should be able to edit a food plate', async () => {
-    const error = jest.fn();
-
-    apiMock
-      .onGet('foods')
-      .reply(200, [
-        {
-          id: 1,
-          name: 'Ao molho',
-          description:
-            'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-          price: '19.90',
-          available: true,
-          image: 'http://rocketseat.com.br',
-        },
-      ])
-      .onPut('foods/1')
-      .reply(400);
-
-    const { getByText, getByTestId, getByPlaceholderText } = render(
-      <Dashboard />,
-    );
-
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
-      timeout: 200,
-    });
-
-    expect(getByText('Ao molho')).toBeTruthy();
-    expect(
-      getByText(
-        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-      ),
-    ).toBeTruthy();
-    expect(getByTestId('remove-food-1')).toBeTruthy();
-    expect(getByTestId('edit-food-1')).toBeTruthy();
-
-    act(() => {
-      fireEvent.click(getByTestId('edit-food-1'));
-    });
-
-    const inputImage = getByPlaceholderText('Cole o link aqui');
-    const inputName = getByPlaceholderText('Ex: Moda Italiana');
-    const inputValue = getByPlaceholderText('Ex: 19.90');
-    const inputDescription = getByPlaceholderText('Descrição');
-
-    await act(async () => {
-      fireEvent.change(inputImage, {
-        target: { value: 'http://rocketseat.com.br' },
-      });
-      fireEvent.change(inputName, { target: { value: 'Veggie' } });
-      fireEvent.change(inputValue, { target: { value: '21.90' } });
-      fireEvent.change(inputDescription, {
-        target: {
-          value:
-            'Macarrão com pimentão, ervilha e ervas finas colhidas no himalaia.',
-        },
-      });
-    });
-
-    expect(inputImage.value).toBe('http://rocketseat.com.br');
-    expect(inputName.value).toBe('Veggie');
-    expect(inputValue.value).toBe('21.90');
-    expect(inputDescription.value).toBe(
-      'Macarrão com pimentão, ervilha e ervas finas colhidas no himalaia.',
-    );
-
-    await act(async () => {
-      fireEvent.click(getByTestId('edit-food-button'));
-    });
-
-    await wait(
-      () =>
-        expect(toast.error).toHaveBeenCalledWith(
-          'An error occured while creating the new plate, try again later!',
-        ),
-      {
-        timeout: 200,
-      },
-    );
+    expect(getByText(editFood.name)).toBeTruthy();
+    expect(getByText(editFood.description)).toBeTruthy();
+    expect(getByTestId(`remove-food-${editFood.id}`)).toBeTruthy();
+    expect(getByTestId(`edit-food-${editFood.id}`)).toBeTruthy();
   });
 
   it('should not be able to edit a food plate with invalid data', async () => {
-    apiMock.onGet('foods').reply(200, [
-      {
-        id: 1,
-        name: 'Ao molho',
-        description:
-          'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-        price: '19.90',
-        available: true,
-        image: 'http://rocketseat.com.br',
-      },
-    ]);
+    const food = await factory.attrs<IFood>('Food', {
+      name: faker.lorem.word().slice(-3),
+      image: 'invalid-url',
+    });
+    apiMock.onGet('foods').reply(200, [food]);
 
     const { getByText, getByTestId, getByPlaceholderText } = render(
       <Dashboard />,
     );
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText(food.name)).toBeTruthy(), {
       timeout: 200,
     });
 
-    expect(getByText('Ao molho')).toBeTruthy();
-    expect(
-      getByText(
-        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-      ),
-    ).toBeTruthy();
-    expect(getByTestId('remove-food-1')).toBeTruthy();
-    expect(getByTestId('edit-food-1')).toBeTruthy();
+    expect(getByText(food.name)).toBeTruthy();
+    expect(getByText(food.description)).toBeTruthy();
+    expect(getByTestId(`remove-food-${food.id}`)).toBeTruthy();
+    expect(getByTestId(`edit-food-${food.id}`)).toBeTruthy();
 
     act(() => {
-      fireEvent.click(getByTestId('edit-food-1'));
+      fireEvent.click(getByTestId(`edit-food-${food.id}`));
     });
 
-    const inputImage = getByPlaceholderText('Cole o link aqui');
-    const inputName = getByPlaceholderText('Ex: Moda Italiana');
-    const inputValue = getByPlaceholderText('Ex: 19.90');
+    const inputImage = getByPlaceholderText(
+      'Cole o link aqui',
+    ) as HTMLInputElement;
+    const inputName = getByPlaceholderText(
+      'Ex: Moda Italiana',
+    ) as HTMLInputElement;
+    const inputValue = getByPlaceholderText('Ex: 19.90') as HTMLInputElement;
 
     await act(async () => {
       fireEvent.change(inputImage, {
-        target: { value: 'rocketseat.com.br' },
+        target: { value: food.image },
       });
-      fireEvent.change(inputName, { target: { value: 'Veg' } });
+      fireEvent.change(inputName, { target: { value: food.name } });
       fireEvent.change(inputValue, { target: { value: 'invalid price' } });
     });
 
-    expect(inputImage.value).toBe('rocketseat.com.br');
-    expect(inputName.value).toBe('Veg');
+    expect(inputImage.value).toBe(food.image);
+    expect(inputName.value).toBe(food.name);
     expect(inputValue.value).toBe('invalid price');
 
     await act(async () => {
       fireEvent.click(getByTestId('edit-food-button'));
     });
 
-    await wait(() => expect(getByText('Invalid price')).toBeTruthy(), {
+    await waitFor(() => expect(getByText('Invalid price')).toBeTruthy(), {
       timeout: 200,
     });
 
@@ -479,120 +328,81 @@ describe('Dashboard', () => {
   });
 
   it('should be able to remove a food plate', async () => {
+    const food = await factory.attrs<IFood>('Food');
     apiMock
       .onGet('foods')
-      .reply(200, [
-        {
-          id: 1,
-          name: 'Ao molho',
-          description:
-            'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-          price: '19.90',
-          available: true,
-          image: 'http://rocketseat.com.br',
-        },
-      ])
+      .reply(200, [food])
 
-      .onDelete('foods/1')
+      .onDelete(`foods/${food.id}`)
       .reply(204);
 
     const { getByText, getByTestId } = render(<Dashboard />);
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText(food.name)).toBeTruthy(), {
       timeout: 200,
     });
 
-    expect(getByText('Ao molho')).toBeTruthy();
-    expect(
-      getByText(
-        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-      ),
-    ).toBeTruthy();
-    expect(getByTestId('remove-food-1')).toBeTruthy();
-    expect(getByTestId('edit-food-1')).toBeTruthy();
+    expect(getByText(food.name)).toBeTruthy();
+    expect(getByText(food.description)).toBeTruthy();
+    expect(getByTestId(`remove-food-${food.id}`)).toBeTruthy();
+    expect(getByTestId(`edit-food-${food.id}`)).toBeTruthy();
 
     await act(async () => {
-      fireEvent.click(getByTestId('remove-food-1'));
+      fireEvent.click(getByTestId(`remove-food-${food.id}`));
     });
 
     expect(getByTestId('foods-list')).toBeEmpty();
   });
 
   it('should be able to update the availibility of a food plate', async () => {
+    const food = await factory.attrs<IFood>('Food');
     apiMock
       .onGet('foods')
-      .reply(200, [
-        {
-          id: 1,
-          name: 'Ao molho',
-          description:
-            'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-          price: '19.90',
-          available: true,
-          image: 'http://rocketseat.com.br',
-        },
-      ])
-      .onPut('foods/1')
+      .reply(200, [food])
+      .onPut(`foods/${food.id}`)
       .reply(200, {
-        id: 1,
-        name: 'Ao molho',
-        description:
-          'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-        price: '19.90',
+        ...food,
         available: false,
-        image: 'http://rocketseat.com.br',
       });
 
     const { getByText, getByTestId } = render(<Dashboard />);
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText(food.name)).toBeTruthy(), {
       timeout: 200,
     });
 
-    expect(getByText('Ao molho')).toBeTruthy();
-    expect(
-      getByText(
-        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-      ),
-    ).toBeTruthy();
+    expect(getByText(food.name)).toBeTruthy();
+    expect(getByText(food.description)).toBeTruthy();
     expect(getByText('Disponível')).toBeTruthy();
-    expect(getByTestId('remove-food-1')).toBeTruthy();
-    expect(getByTestId('edit-food-1')).toBeTruthy();
+    expect(getByTestId(`remove-food-${food.id}`)).toBeTruthy();
+    expect(getByTestId(`edit-food-${food.id}`)).toBeTruthy();
 
     await act(async () => {
-      fireEvent.click(getByTestId('change-status-food-1'));
+      fireEvent.click(getByTestId(`change-status-food-${food.id}`));
     });
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText(food.name)).toBeTruthy(), {
       timeout: 200,
     });
 
-    expect(getByText('Ao molho')).toBeTruthy();
-    expect(
-      getByText(
-        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-      ),
-    ).toBeTruthy();
+    expect(getByText(food.name)).toBeTruthy();
+    expect(getByText(food.description)).toBeTruthy();
     expect(getByText('Indisponível')).toBeTruthy();
-    expect(getByTestId('remove-food-1')).toBeTruthy();
-    expect(getByTestId('edit-food-1')).toBeTruthy();
+    expect(getByTestId(`remove-food-${food.id}`)).toBeTruthy();
+    expect(getByTestId(`edit-food-${food.id}`)).toBeTruthy();
 
     await act(async () => {
-      fireEvent.click(getByTestId('change-status-food-1'));
+      fireEvent.click(getByTestId(`change-status-food-${food.id}`));
     });
 
-    await wait(() => expect(getByText('Ao molho')).toBeTruthy(), {
+    await waitFor(() => expect(getByText(food.name)).toBeTruthy(), {
       timeout: 200,
     });
 
-    expect(getByText('Ao molho')).toBeTruthy();
-    expect(
-      getByText(
-        'Macarrão ao molho branco, fughi e cheiro verde das montanhas.',
-      ),
-    ).toBeTruthy();
+    expect(getByText(food.name)).toBeTruthy();
+    expect(getByText(food.description)).toBeTruthy();
     expect(getByText('Disponível')).toBeTruthy();
-    expect(getByTestId('remove-food-1')).toBeTruthy();
-    expect(getByTestId('edit-food-1')).toBeTruthy();
+    expect(getByTestId(`remove-food-${food.id}`)).toBeTruthy();
+    expect(getByTestId(`edit-food-${food.id}`)).toBeTruthy();
   });
 });
