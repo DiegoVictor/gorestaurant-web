@@ -34,12 +34,6 @@
     "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }],
     "import/prefer-default-export": "off",
     "import/no-duplicates": "off",
-    "@typescript-eslint/interface-name-prefix": [
-      "error",
-      {
-        "prefixWithI": "always"
-      }
-    ],
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/explicit-function-return-type": [
       "error",
@@ -54,7 +48,8 @@
         "ts": "never",
         "tsx": "never"
       }
-    ]
+    ],
+    "react/function-component-definition": "off"
   },
   "settings": {
     "import/resolver": {

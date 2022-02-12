@@ -1,12 +1,10 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
 import Dashboard from '../pages/Dashboard';
 
-const Routes: React.FC = () => (
-  <Switch>
-    <Route path="/" exact component={Dashboard} />
-  </Switch>
+export default (): JSX.Element => (
+  <Routes>
+    <Route path="/" element={<Dashboard />} />
+  </Routes>
 );
-
-export default Routes;

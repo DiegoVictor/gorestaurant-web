@@ -59,7 +59,7 @@ const ModalEditFood: React.FC<IModalProps> = ({
         await handleUpdateFood(data);
         setIsOpen();
       } catch (err) {
-        const errors = getValidationErrors(err);
+        const errors = getValidationErrors(err as Yup.ValidationError);
 
         formRef.current?.setErrors(errors);
       }

@@ -57,7 +57,7 @@ const ModalAddFood: React.FC<IModalProps> = ({
         await handleAddFood(data);
         setIsOpen();
       } catch (err) {
-        const errors = getValidationErrors(err);
+        const errors = getValidationErrors(err as Yup.ValidationError);
 
         formRef.current?.setErrors(errors);
       }
