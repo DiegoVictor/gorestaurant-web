@@ -5,7 +5,7 @@ factory.define(
   'Food',
   {},
   {
-    id: faker.random.number,
+    id: faker.datatype.number,
     name: faker.name.title,
     description: faker.lorem.paragraph,
     price: () => String(faker.finance.amount()),
