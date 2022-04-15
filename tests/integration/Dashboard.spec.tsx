@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, act, waitFor } from '@testing-library/react';
 import AxiosMock from 'axios-mock-adapter';
-import faker from 'faker';
+import faker from '@faker-js/faker';
 
 import { toast } from 'react-toastify';
 import api from '../../src/services/api';

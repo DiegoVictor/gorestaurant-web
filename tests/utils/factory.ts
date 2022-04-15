@@ -1,4 +1,4 @@
-import faker from 'faker';
+import faker from '@faker-js/faker';
 import factory from 'factory-girl';
 
 factory.define(
@@ -6,7 +6,7 @@ factory.define(
   {},
   {
     id: faker.datatype.number,
-    name: faker.name.title,
+    name: faker.commerce.productName,
     description: faker.lorem.paragraph,
     price: () => String(faker.finance.amount()),
     available: true,
