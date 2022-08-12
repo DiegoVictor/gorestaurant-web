@@ -7,7 +7,7 @@
 [![airbnb-style](https://flat.badgen.net/badge/style-guide/airbnb/ff5a5f?icon=airbnb)](https://github.com/airbnb/javascript)
 [![jest](https://img.shields.io/badge/jest-24.9.0-brightgreen?style=flat-square&logo=jest)](https://jestjs.io/)
 [![coverage](https://img.shields.io/codecov/c/gh/DiegoVictor/gorestaurant-web?logo=codecov&style=flat-square)](https://codecov.io/gh/DiegoVictor/gorestaurant-web)
-[![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://github.com/DiegoVictor/gorestaurant-web/blob/master/LICENSE)
+[![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://github.com/DiegoVictor/gorestaurant-web/blob/main/LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)<br>
 This web application allow users to register, update and set foods as available to be ordered in your restaurant. All the resources used by this application comes from a fake [`API`](#api).
 
@@ -23,9 +23,9 @@ This web application allow users to register, update and set foods as available 
 
 # Screenshots
 Click to expand.<br>
-<img src="https://raw.githubusercontent.com/DiegoVictor/gorestaurant-web/master/screenshots/dashboard.png" width="32%"/>
-<img src="https://raw.githubusercontent.com/DiegoVictor/gorestaurant-web/master/screenshots/add-food.png" width="32%"/>
-<img src="https://raw.githubusercontent.com/DiegoVictor/gorestaurant-web/master/screenshots/edit-food.png" width="32%"/>
+<img src="https://raw.githubusercontent.com/DiegoVictor/gorestaurant-web/main/screenshots/dashboard.png" width="32%"/>
+<img src="https://raw.githubusercontent.com/DiegoVictor/gorestaurant-web/main/screenshots/add-food.png" width="32%"/>
+<img src="https://raw.githubusercontent.com/DiegoVictor/gorestaurant-web/main/screenshots/edit-food.png" width="32%"/>
 
 # Installing
 Easy peasy lemon squeezy:
