@@ -59,7 +59,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-app-rewired test --coverage --watchAll=false",
+    "test": "jest --runInBand",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
