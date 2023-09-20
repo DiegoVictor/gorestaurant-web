@@ -3,6 +3,7 @@ import { render, fireEvent, act, waitFor } from '@testing-library/react';
 import AxiosMock from 'axios-mock-adapter';
 import { faker } from '@faker-js/faker';
 import { toast } from 'react-toastify';
+
 import api from '../../src/services/api';
 import Dashboard from '../../src/pages/Dashboard';
 import factory from '../utils/factory';
@@ -16,11 +17,9 @@ interface IFood {
   image: string;
 }
 
-jest.mock('react-toastify');
+const apiMock = new AxiosMock(api);
 
 describe('Dashboard', () => {
-  const apiMock = new AxiosMock(api);
-
   it('should be able to list all the food plates from your api', async () => {
     const foods = await factory.attrsMany<IFood>('Food', 3);
     apiMock.onGet('foods').reply(200, foods);
