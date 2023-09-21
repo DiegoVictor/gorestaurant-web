@@ -32,9 +32,9 @@ const Dashboard: React.FC = () => {
     loadFoods();
   }, []);
 
-  async function handleAddFood(
+  const handleAddFood = async (
     food: Omit<IFoodPlate, 'id' | 'available'>,
-  ): Promise<void> {
+  ): Promise<void> => {
     try {
       const { data } = await api.post('/foods', {
         ...food,
@@ -47,11 +47,11 @@ const Dashboard: React.FC = () => {
         'An error occured while creating the new plate, try again later!',
       );
     }
-  }
+  };
 
-  async function handleUpdateFood(
+  const handleUpdateFood = async (
     food: Omit<IFoodPlate, 'id' | 'available'>,
-  ): Promise<void> {
+  ): Promise<void> => {
     try {
       const { id, available } = editingFood;
       const { data } = await api.put(`foods/${id}`, { id, available, ...food });
@@ -69,25 +69,25 @@ const Dashboard: React.FC = () => {
         'An error occured while updateing the existing plate, try again later!',
       );
     }
-  }
+  };
 
-  async function handleDeleteFood(id: number): Promise<void> {
+  const handleDeleteFood = async (id: number): Promise<void> => {
     await api.delete(`foods/${id}`);
     setFoods(foods.filter(food => food.id !== id));
-  }
+  };
 
-  function toggleModal(): void {
+  const toggleModal = (): void => {
     setModalOpen(!modalOpen);
-  }
+  };
 
-  function toggleEditModal(): void {
+  const toggleEditModal = (): void => {
     setEditModalOpen(!editModalOpen);
-  }
+  };
 
-  function handleEditFood(food: IFoodPlate): void {
+  const handleEditFood = (food: IFoodPlate): void => {
     setEditingFood(food);
     toggleEditModal();
-  }
+  };
 
   return (
     <>

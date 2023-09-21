@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, PropsWithChildren } from 'react';
 import ReactModal from 'react-modal';
 
 interface IModalProps {
-  children: any;
   isOpen: boolean;
   setIsOpen: () => void;
 }
 
-const Modal: React.FC<IModalProps> = ({ children, isOpen, setIsOpen }) => {
+const Modal: React.FC<PropsWithChildren<IModalProps>> = ({
+  children,
+  isOpen,
+  setIsOpen,
+}) => {
   const [modalStatus, setModalStatus] = useState(isOpen);
 
   useEffect(() => {
