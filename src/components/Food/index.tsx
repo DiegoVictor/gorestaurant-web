@@ -15,7 +15,7 @@ interface IFoodPlate {
 
 interface IProps {
   food: IFoodPlate;
-  handleDelete: (id: number) => {};
+  handleDelete: (id: number) => void;
   handleEditFood: (food: IFoodPlate) => void;
 }
 
