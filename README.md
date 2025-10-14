@@ -1,10 +1,10 @@
 # [Web] GoRestaurant
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/DiegoVictor/gorestaurant-web/config.yml?logo=github&style=flat-square)](https://github.com/DiegoVictor/gorestaurant-web/actions)
-[![typescript](https://img.shields.io/badge/typescript-4.0.2-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![react](https://img.shields.io/badge/reactjs-16.13.1-61dafb?style=flat-square&logo=react)](https://reactjs.org/)
-[![styled-components](https://img.shields.io/badge/styled_components-5.1.1-db7b86?style=flat-square&logo=styled-components)](https://styled-components.com/)
-[![eslint](https://img.shields.io/badge/eslint-6.8.0-4b32c3?style=flat-square&logo=eslint)](https://eslint.org/)
-[![jest](https://img.shields.io/badge/jest-24.9.0-brightgreen?style=flat-square&logo=jest)](https://jestjs.io/)
+[![typescript](https://img.shields.io/badge/typescript-5.9.3-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![react](https://img.shields.io/badge/reactjs-19.2.0-61dafb?style=flat-square&logo=react)](https://reactjs.org/)
+[![styled-components](https://img.shields.io/badge/styled_components-6.1.19-db7b86?style=flat-square&logo=styled-components)](https://styled-components.com/)
+[![eslint](https://img.shields.io/badge/eslint-9.37.0-4b32c3?style=flat-square&logo=eslint)](https://eslint.org/)
+[![jest](https://img.shields.io/badge/jest-30.2.0-brightgreen?style=flat-square&logo=jest)](https://jestjs.io/)
 [![coverage](https://img.shields.io/codecov/c/gh/DiegoVictor/gorestaurant-web?logo=codecov&style=flat-square)](https://codecov.io/gh/DiegoVictor/gorestaurant-web)
 [![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://raw.githubusercontent.com/DiegoVictor/gorestaurant-web/main/LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)<br>
