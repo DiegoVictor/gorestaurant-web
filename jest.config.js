@@ -9,6 +9,7 @@ module.exports = {
   ],
   coverageDirectory: 'tests/coverage',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  moduleNameMapper: { '\\.(svg|png)$': '<rootDir>/tests/mocks/file.ts' },
   preset: 'ts-jest',
   roots: ['<rootDir>/src/', '<rootDir>/tests/'],
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
