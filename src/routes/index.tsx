@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 
 import Dashboard from '../pages/Dashboard';
 
-export default (): JSX.Element => (
+export default () => (
   <Routes>
     <Route path="/" element={<Dashboard />} />
   </Routes>
