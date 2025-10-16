@@ -19,9 +19,8 @@ interface IFoodPlate {
 
 const Dashboard: React.FC = () => {
   const [foods, setFoods] = useState<IFoodPlate[]>([]);
-  const [editingFood, setEditingFood] = useState<IFoodPlate>({} as IFoodPlate);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [food, setFood] = useState<IFoodPlate | null>(null);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     async function loadFoods(): Promise<void> {
@@ -77,26 +76,27 @@ const Dashboard: React.FC = () => {
   };
 
   const toggleModal = (): void => {
-    setModalOpen(!modalOpen);
+    setShow(!show);
   };
 
   const editFood = (food: IFoodPlate): void => {
+    setFood(food);
+    toggleModal();
   };
 
   return (
     <>
       <Header openModal={toggleModal} />
-      <ModalAddFood
-        isOpen={modalOpen}
-        setIsOpen={toggleModal}
-        handleAddFood={handleAddFood}
-      />
-      <ModalEditFood
-        isOpen={editModalOpen}
-        setIsOpen={toggleEditModal}
-        editingFood={editingFood}
-        handleUpdateFood={handleUpdateFood}
-      />
+      {food ? (
+        <ModalEditFood
+          show={show}
+          close={toggleModal}
+          data={food}
+          update={update}
+        />
+      ) : (
+        <ModalAddFood show={show} close={toggleModal} add={add} />
+      )}
 
       <FoodsContainer data-testid="foods-list">
         {foods &&
