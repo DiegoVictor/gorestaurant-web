@@ -4,8 +4,8 @@ import { toast } from 'react-toastify';
 import Header from '../../components/Header';
 import api from '../../services/api';
 import Food from '../../components/Food';
-import ModalAddFood from '../../components/ModalAddFood';
-import ModalEditFood from '../../components/ModalEditFood';
+import AddFood from './AddFood';
+import EditFood from './EditFood';
 import { FoodsContainer } from './styles';
 
 interface IFoodPlate {
@@ -31,7 +31,7 @@ const Dashboard: React.FC = () => {
     loadFoods();
   }, []);
 
-  const handleAddFood = async (
+  const add = async (
     food: Omit<IFoodPlate, 'id' | 'available'>,
   ): Promise<void> => {
     try {
@@ -48,12 +48,10 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleUpdateFood = async (
-    food: Omit<IFoodPlate, 'id' | 'available'>,
-  ): Promise<void> => {
+  const update = async (food: IFoodPlate): Promise<void> => {
     try {
-      const { id, available } = editingFood;
-      const { data } = await api.put(`foods/${id}`, { id, available, ...food });
+      const { id } = food;
+      const { data } = await api.put(`foods/${id}`, food);
 
       const newFoodsList = [...foods];
 
@@ -88,14 +86,9 @@ const Dashboard: React.FC = () => {
     <>
       <Header openModal={toggleModal} />
       {food ? (
-        <ModalEditFood
-          show={show}
-          close={toggleModal}
-          data={food}
-          update={update}
-        />
+        <EditFood show={show} close={toggleModal} data={food} update={update} />
       ) : (
-        <ModalAddFood show={show} close={toggleModal} add={add} />
+        <AddFood show={show} close={toggleModal} add={add} />
       )}
 
       <FoodsContainer data-testid="foods-list">

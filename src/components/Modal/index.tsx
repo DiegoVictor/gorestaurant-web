@@ -2,26 +2,26 @@ import React, { useState, useEffect, PropsWithChildren } from 'react';
 import ReactModal from 'react-modal';
 
 interface IModalProps {
-  isOpen: boolean;
-  setIsOpen: () => void;
+  show: boolean;
+  close: () => void;
 }
 
 const Modal: React.FC<PropsWithChildren<IModalProps>> = ({
   children,
-  isOpen,
-  setIsOpen,
+  show,
+  close,
 }) => {
-  const [modalStatus, setModalStatus] = useState(isOpen);
+  const [modalStatus, setModalStatus] = useState(show);
 
   useEffect(() => {
-    setModalStatus(isOpen);
-  }, [isOpen]);
+    setModalStatus(show);
+  }, [show]);
 
   return (
     <ReactModal
       shouldCloseOnOverlayClick={!false}
-      onRequestClose={setIsOpen}
-      isOpen={modalStatus}
+      onRequestClose={close}
+      isOpen={show}
       ariaHideApp={false}
       style={{
         content: {
