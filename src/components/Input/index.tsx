@@ -1,33 +1,21 @@
-import React, { InputHTMLAttributes, useEffect, useRef } from 'react';
+import React, { InputHTMLAttributes } from 'react';
 import { IconBaseProps } from 'react-icons';
-import { useField } from '@unform/core';
 
 import { Container, Error } from './styles';
 
 interface IInputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
   icon?: React.ComponentType<IconBaseProps>;
+  error?: string;
 }
 
-const Input: React.FC<IInputProps> = ({ name, icon: Icon, ...rest }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const { fieldName, defaultValue, registerField, error } = useField(name);
-
-  useEffect(() => {
-    registerField({
-      name: fieldName,
-      ref: inputRef.current,
-      path: 'value',
-    });
-  }, [fieldName, registerField]);
-
+const Input: React.FC<IInputProps> = ({ name, icon: Icon, error, ...rest }) => {
   return (
     <>
       <Container>
         {Icon && <Icon size={20} />}
 
-        <input defaultValue={defaultValue} ref={inputRef} {...rest} />
+        <input {...rest} />
       </Container>
       {error && <Error>{error}</Error>}
     </>
