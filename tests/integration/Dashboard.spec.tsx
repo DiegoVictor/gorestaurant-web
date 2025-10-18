@@ -384,7 +384,7 @@ describe('Dashboard', () => {
       fireEvent.click(getByTestId('edit-food-button'));
     });
 
-    await waitFor(() => expect(getByText('Invalid price')).toBeTruthy(), {
+    await waitFor(() => getByText('Invalid price'), {
       timeout: 200,
     });
 
