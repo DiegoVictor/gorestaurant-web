@@ -15,7 +15,7 @@ const Input: React.FC<IInputProps> = ({ name, icon: Icon, error, ...rest }) => {
       <Container>
         {Icon && <Icon size={20} />}
 
-        <input {...rest} />
+        <input name={name} {...rest} />
       </Container>
       {error && <Error>{error}</Error>}
     </>
