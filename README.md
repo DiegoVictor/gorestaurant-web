@@ -3,7 +3,7 @@
 [![typescript](https://img.shields.io/badge/typescript-5.9.3-3178c6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![react](https://img.shields.io/badge/reactjs-19.2.0-61dafb?style=flat-square&logo=react)](https://reactjs.org/)
 [![styled-components](https://img.shields.io/badge/styled_components-6.1.19-db7b86?style=flat-square&logo=styled-components)](https://styled-components.com/)
-[![eslint](https://img.shields.io/badge/eslint-9.37.0-4b32c3?style=flat-square&logo=eslint)](https://eslint.org/)
+[![eslint](https://img.shields.io/badge/eslint-9.38.0-4b32c3?style=flat-square&logo=eslint)](https://eslint.org/)
 [![jest](https://img.shields.io/badge/jest-30.2.0-brightgreen?style=flat-square&logo=jest)](https://jestjs.io/)
 [![coverage](https://img.shields.io/codecov/c/gh/DiegoVictor/gorestaurant-web?logo=codecov&style=flat-square)](https://codecov.io/gh/DiegoVictor/gorestaurant-web)
 [![MIT License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://raw.githubusercontent.com/DiegoVictor/gorestaurant-web/main/LICENSE)
